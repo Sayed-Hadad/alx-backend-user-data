@@ -5,10 +5,7 @@ from typing import List
 
 
 def filter_datum(
-    fields: List[str],
-    redaction: str,
-    message: str,
-    separator: str
+    fields: List[str], redaction: str, message: str, separator: str
 ) -> str:
     """
     Redacts specified fields in a log message by replacing the field values
@@ -29,11 +26,5 @@ def filter_datum(
         + re.escape(separator) + r"]+"
     )
 
-    def redact(match: re.Match) -> str:
-        """Helper function to replace matched fields with redaction."""
-        field_name = match.group(1)
-        return f"{field_name}{redaction}"
-
-    # Apply redaction
-    redacted_message = re.sub(pattern, redact, message)
-    return redacted_message
+    # Use re.sub with a lambda to replace matched fields with the redaction
+    return re.sub(pattern, lambda m: m.group(1) + redaction, message)
