@@ -6,6 +6,10 @@ from typing import List
 import re
 
 
+# Define the PII fields
+PII_FIELDS = ("name", "email", "password", "ssn", "phone")
+
+
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
     """Returns regex-obfuscated log messages."""
@@ -37,3 +41,20 @@ class RedactingFormatter(logging.Formatter):
             original_message,
             self.SEPARATOR
         )
+
+
+def get_logger() -> logging.Logger:
+    """Returns a logger configured to filter PII fields."""
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    # StreamHandler with RedactingFormatter
+    target_handler = logging.StreamHandler()
+    target_handler.setLevel(logging.INFO)
+
+    formatter = RedactingFormatter(list(PII_FIELDS))
+    target_handler.setFormatter(formatter)
+
+    logger.addHandler(target_handler)
+    return logger
