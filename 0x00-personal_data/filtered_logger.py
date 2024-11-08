@@ -4,6 +4,8 @@
 import logging
 from typing import List
 import re
+import mysql.connector
+import os
 
 
 # Define the PII fields
@@ -58,3 +60,14 @@ def get_logger() -> logging.Logger:
 
     logger.addHandler(target_handler)
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Connects to a secure MySQL database using environment variables."""
+    db_connect = mysql.connector.connect(
+        user=os.getenv("PERSONAL_DATA_DB_USERNAME", "root"),
+        password=os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
+        host=os.getenv("PERSONAL_DATA_DB_HOST", "localhost"),
+        database=os.getenv("PERSONAL_DATA_DB_NAME")
+    )
+    return db_connect
